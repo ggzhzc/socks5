@@ -37,8 +37,8 @@ from urllib.parse import quote
 # ---- 单端口设置（TCP 跑 SOCKS5 转发，UDP 跑 Hysteria2）----
 PORT = 443                       # 唯一端口号（<1024 需要 root 权限）
 USERNAME = "proxyuser"           # SOCKS5 用户名
-PASSWORD = ""                    # SOCKS5 密码（必填，至少 12 位）
-HY2_PASSWORD = ""                # Hysteria2 密码（必填，至少 12 位）
+PASSWORD = ""                    # SOCKS5 密码（必填，可自定义长度）
+HY2_PASSWORD = ""                # Hysteria2 密码（必填，可自定义长度）
 
 # ---- 链接里的服务器地址 ----
 PROXY_HOST = ""                  # 留空则自动探测公网 IP；可填域名/IP
@@ -527,11 +527,11 @@ async def handle_client(reader, writer):
 # ---------------------------------------------------------------------------
 
 async def main() -> None:
-    # 校验配置
-    if not PASSWORD or len(PASSWORD) < 12:
-        raise SystemExit("错误：请在配置区设置 ≥12 位的 SOCKS5 PASSWORD。")
-    if not HY2_PASSWORD or len(HY2_PASSWORD) < 12:
-        raise SystemExit("错误：请在配置区设置 ≥12 位的 HY2_PASSWORD。")
+    # 校验配置：密码可以是任意长度，但不能留空
+    if not PASSWORD:
+        raise SystemExit("错误：请在配置区设置 SOCKS5 PASSWORD，不能留空。")
+    if not HY2_PASSWORD:
+        raise SystemExit("错误：请在配置区设置 HY2_PASSWORD，不能留空。")
 
     # 确定写进链接的公网地址
     if PROXY_HOST:
